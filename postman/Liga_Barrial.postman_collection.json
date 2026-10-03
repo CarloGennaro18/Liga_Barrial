@@ -1,0 +1,174 @@
+{
+  "info": {
+    "_postman_id": "564e41b6-1d7d-4c12-b025-819dfc43bbf1",
+    "name": "Liga_Barrial",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57303828",
+    "_collection_link": "https://go.postman.co/collection/57303828-564e41b6-1d7d-4c12-b025-819dfc43bbf1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Listar",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Obtener_Uno",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "e2c81cb7-12ce-4b59-8903-00b07ddd360a"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear_campeonato",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nombre\": \"Liga Barrial 2025\",\r\n  \"temporada\": \"2025-A\",\r\n  \"fechaInicio\": \"2025-09-10\",\r\n  \"fechaFin\": \"2025-02-10\",\r\n  \"estado\": \"planificado\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Reemplazo_temporada",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nombre\": \"Liga Barrial 2026\",\r\n    \"temporada\": \"2026-A\",\r\n    \"fechaInicio\": \"2026-10-10\",\r\n    \"fechaFin\": \"2026-12-20\",\r\n    \"estado\": \"finalizado\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "e2c81cb7-12ce-4b59-8903-00b07ddd360a"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Eliminar_Campeonato",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "8085ee05-8b0e-4e5d-922a-35fde6f2133b"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cambio_Temporada",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"temporada\": \"2023-A\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/campeonatos/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "campeonatos",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "e2c81cb7-12ce-4b59-8903-00b07ddd360a"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}
