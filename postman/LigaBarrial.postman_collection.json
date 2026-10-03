@@ -1,0 +1,403 @@
+{
+  "info": {
+    "name": "LigaBarrial",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
+    { "key": "campeonatoId", "value": "" },
+    { "key": "equipoId", "value": "" },
+    { "key": "equipoLocalId", "value": "" },
+    { "key": "equipoVisitanteId", "value": "" },
+    { "key": "jugadorId", "value": "" },
+    { "key": "arbitroId", "value": "" },
+    { "key": "canchaId", "value": "" },
+    { "key": "partidoId", "value": "" },
+    { "key": "tarjetaId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Campeonatos",
+      "item": [
+        {
+          "name": "1.1 Crear campeonato",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/campeonatos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Liga Barrial 2026\",\n  \"temporada\": \"2026-A\",\n  \"fechaInicio\": \"2026-10-10\",\n  \"fechaFin\": \"2026-12-20\",\n  \"estado\": \"planificado\"\n}"
+            }
+          }
+        },
+        { "name": "1.2 Listar campeonatos", "request": { "method": "GET", "url": "{{baseUrl}}/campeonatos" } },
+        { "name": "1.3 Obtener campeonato por id", "request": { "method": "GET", "url": "{{baseUrl}}/campeonatos/{{campeonatoId}}" } },
+        {
+          "name": "1.4 Reemplazar campeonato (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/campeonatos/{{campeonatoId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Liga Barrial 2026 - Edición Especial\",\n  \"temporada\": \"2026-B\",\n  \"fechaInicio\": \"2026-11-01\",\n  \"fechaFin\": \"2027-01-15\",\n  \"estado\": \"en_curso\"\n}"
+            }
+          }
+        },
+        {
+          "name": "1.5 Modificar estado (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/campeonatos/{{campeonatoId}}",
+            "body": { "mode": "raw", "raw": "{ \"estado\": \"en_curso\" }" }
+          }
+        },
+        { "name": "1.6 Eliminar campeonato", "request": { "method": "DELETE", "url": "{{baseUrl}}/campeonatos/{{campeonatoId}}" } }
+      ]
+    },
+    {
+      "name": "2. Equipos",
+      "item": [
+        {
+          "name": "2.1 Crear equipo local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/equipos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Deportivo San Roque\",\n  \"representante\": \"Juan Pérez\",\n  \"telefono\": \"70011223\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.2 Crear equipo visitante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/equipos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Real Potosí Barrio\",\n  \"representante\": \"María López\",\n  \"telefono\": \"70044556\"\n}"
+            }
+          }
+        },
+        { "name": "2.3 Listar equipos", "request": { "method": "GET", "url": "{{baseUrl}}/equipos" } },
+        { "name": "2.4 Obtener equipo por id", "request": { "method": "GET", "url": "{{baseUrl}}/equipos/{{equipoId}}" } },
+        {
+          "name": "2.5 Reemplazar equipo (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/equipos/{{equipoId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Deportivo San Roque FC\",\n  \"representante\": \"Juan Pérez\",\n  \"telefono\": \"70099999\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.6 Modificar teléfono (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/equipos/{{equipoId}}",
+            "body": { "mode": "raw", "raw": "{ \"telefono\": \"71122334\" }" }
+          }
+        },
+        {
+          "name": "2.7 Inscribir equipo a campeonato",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/equipos/{{equipoId}}/inscripcion",
+            "body": { "mode": "raw", "raw": "{ \"campeonatoId\": \"{{campeonatoId}}\" }" }
+          }
+        },
+        { "name": "2.8 Eliminar equipo", "request": { "method": "DELETE", "url": "{{baseUrl}}/equipos/{{equipoId}}" } }
+      ]
+    },
+    {
+      "name": "3. Jugadores",
+      "item": [
+        {
+          "name": "3.1 Crear jugador",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/jugadores",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Mamani\",\n  \"numeroCamiseta\": 10,\n  \"posicion\": \"delantero\",\n  \"equipoId\": \"{{equipoId}}\"\n}"
+            }
+          }
+        },
+        { "name": "3.2 Listar jugadores", "request": { "method": "GET", "url": "{{baseUrl}}/jugadores" } },
+        { "name": "3.3 Filtrar por equipo", "request": { "method": "GET", "url": "{{baseUrl}}/jugadores?equipoId={{equipoId}}" } },
+        { "name": "3.4 Obtener jugador por id", "request": { "method": "GET", "url": "{{baseUrl}}/jugadores/{{jugadorId}}" } },
+        {
+          "name": "3.5 Reemplazar jugador (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/jugadores/{{jugadorId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Mamani Quispe\",\n  \"numeroCamiseta\": 9,\n  \"posicion\": \"delantero\",\n  \"equipoId\": \"{{equipoId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.6 Modificar posición (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/jugadores/{{jugadorId}}",
+            "body": { "mode": "raw", "raw": "{ \"posicion\": \"mediocampista\" }" }
+          }
+        },
+        { "name": "3.7 Eliminar jugador", "request": { "method": "DELETE", "url": "{{baseUrl}}/jugadores/{{jugadorId}}" } }
+      ]
+    },
+    {
+      "name": "4. Árbitros",
+      "item": [
+        {
+          "name": "4.1 Crear árbitro",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/arbitros",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Luis Quispe\",\n  \"telefono\": \"70099887\",\n  \"categoria\": \"principal\"\n}" }
+          }
+        },
+        { "name": "4.2 Listar árbitros", "request": { "method": "GET", "url": "{{baseUrl}}/arbitros" } },
+        { "name": "4.3 Obtener árbitro por id", "request": { "method": "GET", "url": "{{baseUrl}}/arbitros/{{arbitroId}}" } },
+        {
+          "name": "4.4 Reemplazar árbitro (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/arbitros/{{arbitroId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Luis Quispe Rojas\",\n  \"telefono\": \"70011111\",\n  \"categoria\": \"asistente\"\n}" }
+          }
+        },
+        {
+          "name": "4.5 Modificar teléfono (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/arbitros/{{arbitroId}}",
+            "body": { "mode": "raw", "raw": "{ \"telefono\": \"72233445\" }" }
+          }
+        },
+        { "name": "4.6 Eliminar árbitro", "request": { "method": "DELETE", "url": "{{baseUrl}}/arbitros/{{arbitroId}}" } }
+      ]
+    },
+    {
+      "name": "5. Canchas",
+      "item": [
+        {
+          "name": "5.1 Crear cancha",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/canchas",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cancha El Mirador\",\n  \"direccion\": \"Av. Los Andes s/n\",\n  \"capacidad\": 500\n}" }
+          }
+        },
+        { "name": "5.2 Listar canchas", "request": { "method": "GET", "url": "{{baseUrl}}/canchas" } },
+        { "name": "5.3 Obtener cancha por id", "request": { "method": "GET", "url": "{{baseUrl}}/canchas/{{canchaId}}" } },
+        {
+          "name": "5.4 Reemplazar cancha (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/canchas/{{canchaId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cancha El Mirador Norte\",\n  \"direccion\": \"Av. Los Andes 123\",\n  \"capacidad\": 800\n}" }
+          }
+        },
+        {
+          "name": "5.5 Modificar capacidad (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/canchas/{{canchaId}}",
+            "body": { "mode": "raw", "raw": "{ \"capacidad\": 1000 }" }
+          }
+        },
+        { "name": "5.6 Eliminar cancha", "request": { "method": "DELETE", "url": "{{baseUrl}}/canchas/{{canchaId}}" } }
+      ]
+    },
+    {
+      "name": "6. Partidos",
+      "item": [
+        {
+          "name": "6.1 Crear partido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campeonatoId\": \"{{campeonatoId}}\",\n  \"jornada\": 4,\n  \"equipoLocalId\": \"{{equipoLocalId}}\",\n  \"equipoVisitanteId\": \"{{equipoVisitanteId}}\",\n  \"arbitroId\": \"{{arbitroId}}\",\n  \"canchaId\": \"{{canchaId}}\",\n  \"fecha\": \"2026-10-12\",\n  \"hora\": \"18:30\"\n}"
+            }
+          }
+        },
+        { "name": "6.2 Listar partidos", "request": { "method": "GET", "url": "{{baseUrl}}/partidos" } },
+        { "name": "6.3 Filtrar por campeonato", "request": { "method": "GET", "url": "{{baseUrl}}/partidos?campeonatoId={{campeonatoId}}" } },
+        { "name": "6.4 Obtener partido por id", "request": { "method": "GET", "url": "{{baseUrl}}/partidos/{{partidoId}}" } },
+        {
+          "name": "6.5 Reemplazar partido (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos/{{partidoId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campeonatoId\": \"{{campeonatoId}}\",\n  \"jornada\": 4,\n  \"equipoLocalId\": \"{{equipoLocalId}}\",\n  \"equipoVisitanteId\": \"{{equipoVisitanteId}}\",\n  \"arbitroId\": \"{{arbitroId}}\",\n  \"canchaId\": \"{{canchaId}}\",\n  \"fecha\": \"2026-10-12\",\n  \"hora\": \"20:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "6.6 Modificar hora (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos/{{partidoId}}",
+            "body": { "mode": "raw", "raw": "{ \"hora\": \"19:00\" }" }
+          }
+        },
+        {
+          "name": "6.7 Registrar resultado",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos/{{partidoId}}/resultado",
+            "body": { "mode": "raw", "raw": "{ \"golesLocal\": 3, \"golesVisitante\": 1 }" }
+          }
+        },
+        { "name": "6.8 Eliminar partido", "request": { "method": "DELETE", "url": "{{baseUrl}}/partidos/{{partidoId}}" } }
+      ]
+    },
+    {
+      "name": "7. Tarjetas",
+      "item": [
+        {
+          "name": "7.1 Crear tarjeta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/tarjetas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partidoId\": \"{{partidoId}}\",\n  \"jugadorId\": \"{{jugadorId}}\",\n  \"tipo\": \"amarilla\",\n  \"minuto\": 45,\n  \"motivo\": \"Falta táctica\"\n}"
+            }
+          }
+        },
+        { "name": "7.2 Listar tarjetas", "request": { "method": "GET", "url": "{{baseUrl}}/tarjetas" } },
+        { "name": "7.3 Filtrar por partido", "request": { "method": "GET", "url": "{{baseUrl}}/tarjetas?partidoId={{partidoId}}" } },
+        { "name": "7.4 Filtrar por jugador", "request": { "method": "GET", "url": "{{baseUrl}}/tarjetas?jugadorId={{jugadorId}}" } },
+        { "name": "7.5 Obtener tarjeta por id", "request": { "method": "GET", "url": "{{baseUrl}}/tarjetas/{{tarjetaId}}" } },
+        {
+          "name": "7.6 Reemplazar tarjeta (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/tarjetas/{{tarjetaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partidoId\": \"{{partidoId}}\",\n  \"jugadorId\": \"{{jugadorId}}\",\n  \"tipo\": \"roja\",\n  \"minuto\": 80,\n  \"motivo\": \"Conducta violenta\"\n}"
+            }
+          }
+        },
+        {
+          "name": "7.7 Modificar motivo (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/tarjetas/{{tarjetaId}}",
+            "body": { "mode": "raw", "raw": "{ \"motivo\": \"Discusión con el árbitro\" }" }
+          }
+        },
+        { "name": "7.8 Eliminar tarjeta", "request": { "method": "DELETE", "url": "{{baseUrl}}/tarjetas/{{tarjetaId}}" } }
+      ]
+    },
+    {
+      "name": "8. Tabla de Posiciones",
+      "item": [
+        {
+          "name": "8.1 Obtener tabla del campeonato",
+          "request": { "method": "GET", "url": "{{baseUrl}}/campeonatos/{{campeonatoId}}/tabla-posiciones" }
+        }
+      ]
+    },
+    {
+      "name": "9. Casos de ERROR",
+      "item": [
+        {
+          "name": "9.1 ERROR 400 - nombre muy corto",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/campeonatos",
+            "body": { "mode": "raw", "raw": "{ \"nombre\": \"A\" }" }
+          }
+        },
+        {
+          "name": "9.2 ERROR 400 - campo extra no permitido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/campeonatos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Liga Test\",\n  \"temporada\": \"2026\",\n  \"fechaInicio\": \"2026-10-01\",\n  \"fechaFin\": \"2026-12-01\",\n  \"estado\": \"planificado\",\n  \"campoExtra\": \"no permitido\"\n}"
+            }
+          }
+        },
+        { "name": "9.3 ERROR 404 - campeonato no existe", "request": { "method": "GET", "url": "{{baseUrl}}/campeonatos/id-inventado" } },
+        { "name": "9.4 ERROR 404 - eliminar inexistente", "request": { "method": "DELETE", "url": "{{baseUrl}}/campeonatos/id-inventado" } },
+        {
+          "name": "9.5 ERROR 400 - mismo equipo local y visitante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campeonatoId\": \"{{campeonatoId}}\",\n  \"jornada\": 1,\n  \"equipoLocalId\": \"{{equipoLocalId}}\",\n  \"equipoVisitanteId\": \"{{equipoLocalId}}\",\n  \"arbitroId\": \"{{arbitroId}}\",\n  \"canchaId\": \"{{canchaId}}\",\n  \"fecha\": \"2026-10-12\",\n  \"hora\": \"18:30\"\n}"
+            }
+          }
+        },
+        {
+          "name": "9.6 ERROR 400 - goles negativos",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/partidos/{{partidoId}}/resultado",
+            "body": { "mode": "raw", "raw": "{ \"golesLocal\": -1, \"golesVisitante\": 0 }" }
+          }
+        },
+        {
+          "name": "9.7 ERROR 400 - número de camiseta inválido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/jugadores",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Jugador Test\",\n  \"numeroCamiseta\": 200,\n  \"posicion\": \"delantero\",\n  \"equipoId\": \"{{equipoId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "9.8 ERROR 404 - tabla sin equipos",
+          "request": { "method": "GET", "url": "{{baseUrl}}/campeonatos/campeonato-vacio/tabla-posiciones" }
+        }
+      ]
+    }
+  ]
+}
