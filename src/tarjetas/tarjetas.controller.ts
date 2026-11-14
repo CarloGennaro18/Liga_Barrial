@@ -1,15 +1,32 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TarjetasService } from './tarjetas.service';
 import { CreateTarjetaDto } from './dto/create-tarjeta.dto';
 import { UpdateTarjetaDto } from './dto/update-tarjeta.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('tarjetas')
 export class TarjetasController {
   constructor(private readonly tarjetasService: TarjetasService) {}
 
+  /** CREAR TARJETA: Solo permitido para ADMIN o ARBITRO */
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'ARBITRO')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateTarjetaDto) {
     return this.tarjetasService.create(dto);

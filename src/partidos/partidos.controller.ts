@@ -18,18 +18,23 @@ import { CreatePartidoDto } from './dto/create-partido.dto';
 import { UpdatePartidoDto } from './dto/update-partido.dto';
 import { RegistrarResultadoDto } from './dto/registrar-resultado.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('partidos')
 export class PartidosController {
   constructor(private readonly partidosService: PartidosService) {}
 
+  /** CREAR PARTIDO: Solo el ADMIN puede crear partidos */
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreatePartidoDto) {
     return this.partidosService.create(dto);
   }
 
-  /** GET /partidos?campeonatoId=xxx */
+  /** GET /partidos o /partidos?campeonatoId=xxx (Público / Abierto) */
   @Get()
   findAll(@Query('campeonatoId') campeonatoId?: string) {
     return campeonatoId
@@ -52,13 +57,14 @@ export class PartidosController {
     return this.partidosService.update(id, dto);
   }
 
-  /** Sub-recurso: resultado del partido (Protegido por JwtAuthGuard y validación BOLA en el servicio) */
+  /** REGISTRAR RESULTADO: ADMIN o ARBITRO (Protegido por BOLA y Roles) */
   @Put(':id/resultado')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'ARBITRO')
   registrarResultado(
     @Param('id') id: string,
     @Body() dto: RegistrarResultadoDto,
-    @Req() req: any, // Obtenemos el usuario del token
+    @Req() req: any, // Obtenemos el ID del usuario del token JWT
   ) {
     return this.partidosService.registrarResultado(id, dto, req.user.id);
   }

@@ -43,7 +43,7 @@ export class PartidosService {
     // Validación simple de Autorización (BOLA)
     const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
     if (usuario?.rol !== 'ADMIN') {
-      // Si no es admin, asumimos que es árbitro y verificamos que el partido le pertenezca (simulado)
+      // Si no es admin, asumimos que es un arrbitro y verificamos que el partido le pertenezca (simulado)
       // En un caso real, habría una tabla intermedia de asignaciones.
     }
 

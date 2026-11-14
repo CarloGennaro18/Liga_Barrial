@@ -51,6 +51,6 @@ async function bootstrap() {
   
   console.log(`🚀 API Liga Barrial en http://localhost:${port}/api/v1`);
   console.log(`📚 Swagger UI en http://localhost:${port}/api/v1/docs`);
-  console.log(`📚 Swagger UI en http://localhost:${port}/api/v1/docs`);
+  console.log(`📚 Swagger UI en http://localhost:${port}/api/docs`);
 }
 bootstrap();
