@@ -1,26 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EquiposService } from '../equipos/equipos.service';
-import { PartidosService } from '../partidos/partidos.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { FilaTabla } from './interfaces/fila-tabla.interface';
 
 @Injectable()
 export class TablaPosicionesService {
-  constructor(
-    private readonly equiposService: EquiposService,
-    private readonly partidosService: PartidosService,
-  ) {}
+  // Solo inyectamos Prisma, ya no necesitamos EquiposService ni PartidosService
+  constructor(private prisma: PrismaService) {}
 
-  calcular(campeonatoId: string): FilaTabla[] {
-    const equipos = this.equiposService.findByCampeonato(campeonatoId);
+  async calcular(campeonatoId: string): Promise<FilaTabla[]> {
+    // 1. Buscar equipos inscritos en este campeonato
+    const equipos = await this.prisma.equipo.findMany({
+      where: { campeonatoId },
+    });
+
     if (equipos.length === 0) {
-      throw new NotFoundException(
-        `No hay equipos inscritos en el campeonato "${campeonatoId}"`,
-      );
+      throw new NotFoundException(`No hay equipos inscritos en el campeonato "${campeonatoId}"`);
     }
 
-    const partidos = this.partidosService.findByCampeonato(campeonatoId);
+    // 2. Buscar solo los partidos que ya se jugaron (los que tienen resultado)
+    const partidos = await this.prisma.partido.findMany({
+      where: {
+        campeonatoId,
+        estado: 'jugado',
+        golesLocal: { not: null },
+        golesVisitante: { not: null },
+      },
+    });
 
-    // Inicializamos la tabla con todos los equipos en cero
+    // 3. Inicializar el mapa con todos los equipos en cero
     const mapa = new Map<string, Omit<FilaTabla, 'posicion' | 'dg'>>();
     equipos.forEach((e) =>
       mapa.set(e.id, {
@@ -31,16 +38,15 @@ export class TablaPosicionesService {
       }),
     );
 
-    // Recorremos los partidos que ya tienen resultado
+    // 4. Procesar los partidos jugados
     for (const p of partidos) {
-      if (!p.resultado) continue;
-
       const local = mapa.get(p.equipoLocalId);
       const visitante = mapa.get(p.equipoVisitanteId);
-      if (!local || !visitante) continue;
+      if (!local || !visitante) continue; // Por seguridad
 
-      const gl = p.resultado.golesLocal;
-      const gv = p.resultado.golesVisitante;
+      // Como validamos arriba que no son nulos, forzamos el tipo con !
+      const gl = p.golesLocal!;
+      const gv = p.golesVisitante!;
 
       local.pj++;
       visitante.pj++;
@@ -65,7 +71,7 @@ export class TablaPosicionesService {
       }
     }
 
-    // Convertimos a arreglo, calculamos DG y ordenamos
+    // 5. Convertir a arreglo, calcular Diferencia de Goles y ordenar
     const filas: Omit<FilaTabla, 'posicion'>[] = Array.from(mapa.values()).map(
       (f) => ({ ...f, dg: f.gf - f.gc }),
     );

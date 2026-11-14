@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- NUEVA ENTIDAD PARA SEGURIDAD ---
+model Usuario {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  rol       String   @default("ARBITRO") // ADMIN, ARBITRO, PUBLICO
+  createdAt DateTime @default(now())
+}
+
+// --- ENTIDADES DE LA LIGA ---
+model Campeonato {
+  id        String   @id @default(uuid())
+  nombre    String
+  temporada String
+  fechaInicio String
+  fechaFin    String
+  estado    String   @default("planificado")
+  equipos   Equipo[]
+  partidos  Partido[]
+}
+
+model Equipo {
+  id            String    @id @default(uuid())
+  nombre        String
+  representante String
+  telefono      String
+  campeonatoId  String?
+  campeonato    Campeonato? @relation(fields: [campeonatoId], references: [id])
+  jugadores     Jugador[]
+}
+
+model Jugador {
+  id            String   @id @default(uuid())
+  nombre        String
+  numeroCamiseta Int
+  posicion      String
+  equipoId      String
+  equipo        Equipo   @relation(fields: [equipoId], references: [id])
+  tarjetas      Tarjeta[]
+}
+
+model Arbitro {
+  id        String   @id @default(uuid())
+  nombre    String
+  telefono  String
+  categoria String
+  partidos  Partido[]
+}
+
+model Cancha {
+  id        String   @id @default(uuid())
+  nombre    String
+  direccion String
+  capacidad Int
+  partidos  Partido[]
+}
+
+model Partido {
+  id               String     @id @default(uuid())
+  campeonatoId     String
+  campeonato       Campeonato @relation(fields: [campeonatoId], references: [id])
+  jornada          Int
+  equipoLocalId    String
+  equipoVisitanteId String
+  arbitroId        String
+  arbitro          Arbitro    @relation(fields: [arbitroId], references: [id])
+  canchaId         String
+  cancha           Cancha     @relation(fields: [canchaId], references: [id])
+  fecha            String
+  hora             String
+  estado           String     @default("programado")
+  golesLocal       Int?
+  golesVisitante   Int?
+  tarjetas         Tarjeta[]
+}
+
+model Tarjeta {
+  id        String  @id @default(uuid())
+  partidoId String
+  partido   Partido @relation(fields: [partidoId], references: [id])
+  jugadorId String
+  jugador   Jugador @relation(fields: [jugadorId], references: [id])
+  tipo      String
+  minuto    Int
+  motivo    String
+}

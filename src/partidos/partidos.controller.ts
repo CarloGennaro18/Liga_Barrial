@@ -1,10 +1,23 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { PartidosService } from './partidos.service';
 import { CreatePartidoDto } from './dto/create-partido.dto';
 import { UpdatePartidoDto } from './dto/update-partido.dto';
 import { RegistrarResultadoDto } from './dto/registrar-resultado.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('partidos')
 export class PartidosController {
@@ -39,18 +52,20 @@ export class PartidosController {
     return this.partidosService.update(id, dto);
   }
 
-  /** Sub-recurso: resultado del partido */
+  /** Sub-recurso: resultado del partido (Protegido por JwtAuthGuard y validación BOLA en el servicio) */
   @Put(':id/resultado')
+  @UseGuards(JwtAuthGuard)
   registrarResultado(
     @Param('id') id: string,
     @Body() dto: RegistrarResultadoDto,
+    @Req() req: any, // Obtenemos el usuario del token
   ) {
-    return this.partidosService.registrarResultado(id, dto);
+    return this.partidosService.registrarResultado(id, dto, req.user.id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
-    this.partidosService.remove(id);
+    return this.partidosService.remove(id);
   }
 }

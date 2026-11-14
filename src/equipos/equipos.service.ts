@@ -1,57 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { Equipo } from './entities/equipo.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateEquipoDto } from './dto/create-equipo.dto';
 import { UpdateEquipoDto } from './dto/update-equipo.dto';
 import { InscribirEquipoDto } from './dto/inscribir-equipo.dto';
 
 @Injectable()
 export class EquiposService {
-  private readonly equipos: Equipo[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateEquipoDto): Equipo {
-    const nuevo: Equipo = {
-      id: randomUUID(),
-      nombre: dto.nombre,
-      representante: dto.representante,
-      telefono: dto.telefono,
-      campeonatoId: dto.campeonatoId ?? null,
-      fechaInscripcion: dto.campeonatoId ? new Date().toISOString() : null,
-    };
-    this.equipos.push(nuevo);
-    return nuevo;
+  async create(dto: CreateEquipoDto) {
+    return await this.prisma.equipo.create({
+      data: {
+        ...dto,
+        fechaInscripcion: dto.campeonatoId ? new Date().toISOString() : null,
+      },
+    });
   }
 
-  findAll(): Equipo[] {
-    return this.equipos;
+  async findAll() {
+    return await this.prisma.equipo.findMany();
   }
 
-  findByCampeonato(campeonatoId: string): Equipo[] {
-    return this.equipos.filter((e) => e.campeonatoId === campeonatoId);
+  async findByCampeonato(campeonatoId: string) {
+    return await this.prisma.equipo.findMany({ where: { campeonatoId } });
   }
 
-  findOne(id: string): Equipo {
-    const eq = this.equipos.find((e) => e.id === id);
-    if (!eq) throw new NotFoundException(`Equipo con id "${id}" no encontrado`);
-    return eq;
+  async findOne(id: string) {
+    const equipo = await this.prisma.equipo.findUnique({ where: { id } });
+    if (!equipo) throw new NotFoundException(`Equipo ${id} no encontrado`);
+    return equipo;
   }
 
-  update(id: string, dto: UpdateEquipoDto): Equipo {
-    const eq = this.findOne(id);
-    Object.assign(eq, dto);
-    return eq;
+  async update(id: string, dto: UpdateEquipoDto) {
+    await this.findOne(id);
+    return await this.prisma.equipo.update({ where: { id }, data: dto });
   }
 
-  inscribir(id: string, dto: InscribirEquipoDto): Equipo {
-    const eq = this.findOne(id);
-    eq.campeonatoId = dto.campeonatoId;
-    eq.fechaInscripcion = new Date().toISOString();
-    return eq;
+  async inscribir(id: string, dto: InscribirEquipoDto) {
+    await this.findOne(id);
+    return await this.prisma.equipo.update({
+      where: { id },
+      data: {
+        campeonatoId: dto.campeonatoId,
+        fechaInscripcion: new Date().toISOString(),
+      },
+    });
   }
 
-  remove(id: string): void {
-    const index = this.equipos.findIndex((e) => e.id === id);
-    if (index === -1) throw new NotFoundException(`Equipo con id "${id}" no encontrado`);
-    this.equipos.splice(index, 1);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.prisma.equipo.delete({ where: { id } });
   }
 }

@@ -1,42 +1,37 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { Jugador } from './entities/jugador.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateJugadorDto } from './dto/create-jugador.dto';
 import { UpdateJugadorDto } from './dto/update-jugador.dto';
 
 @Injectable()
 export class JugadoresService {
-  private readonly jugadores: Jugador[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateJugadorDto): Jugador {
-    const nuevo: Jugador = { id: randomUUID(), ...dto };
-    this.jugadores.push(nuevo);
-    return nuevo;
+  async create(dto: CreateJugadorDto) {
+    return await this.prisma.jugador.create({ data: dto });
   }
 
-  findAll(): Jugador[] {
-    return this.jugadores;
+  async findAll() {
+    return await this.prisma.jugador.findMany();
   }
 
-  findByEquipo(equipoId: string): Jugador[] {
-    return this.jugadores.filter((j) => j.equipoId === equipoId);
+  async findByEquipo(equipoId: string) {
+    return await this.prisma.jugador.findMany({ where: { equipoId } });
   }
 
-  findOne(id: string): Jugador {
-    const j = this.jugadores.find((x) => x.id === id);
-    if (!j) throw new NotFoundException(`Jugador con id "${id}" no encontrado`);
-    return j;
+  async findOne(id: string) {
+    const jugador = await this.prisma.jugador.findUnique({ where: { id } });
+    if (!jugador) throw new NotFoundException(`Jugador ${id} no encontrado`);
+    return jugador;
   }
 
-  update(id: string, dto: UpdateJugadorDto): Jugador {
-    const j = this.findOne(id);
-    Object.assign(j, dto);
-    return j;
+  async update(id: string, dto: UpdateJugadorDto) {
+    await this.findOne(id);
+    return await this.prisma.jugador.update({ where: { id }, data: dto });
   }
 
-  remove(id: string): void {
-    const index = this.jugadores.findIndex((j) => j.id === id);
-    if (index === -1) throw new NotFoundException(`Jugador con id "${id}" no encontrado`);
-    this.jugadores.splice(index, 1);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.prisma.jugador.delete({ where: { id } });
   }
 }

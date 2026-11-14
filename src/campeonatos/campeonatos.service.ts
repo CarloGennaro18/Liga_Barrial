@@ -1,42 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { Campeonato } from './entities/campeonato.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCampeonatoDto } from './dto/create-campeonato.dto';
 import { UpdateCampeonatoDto } from './dto/update-campeonato.dto';
 
 @Injectable()
 export class CampeonatosService {
-  private readonly campeonatos: Campeonato[] = [];
+  constructor(private prisma: PrismaService) {} // Inyectamos Prisma
 
-  create(dto: CreateCampeonatoDto): Campeonato {
-    const nuevo: Campeonato = { id: randomUUID(), ...dto };
-    this.campeonatos.push(nuevo);
-    return nuevo;
+  async create(dto: CreateCampeonatoDto) {
+    return await this.prisma.campeonato.create({ data: dto });
   }
 
-  findAll(): Campeonato[] {
-    return this.campeonatos;
+  async findAll() {
+    return await this.prisma.campeonato.findMany();
   }
 
-  findOne(id: string): Campeonato {
-    const encontrado = this.campeonatos.find((c) => c.id === id);
-    if (!encontrado) {
-      throw new NotFoundException(`Campeonato con id "${id}" no encontrado`);
-    }
-    return encontrado;
-  }
-
-  update(id: string, dto: UpdateCampeonatoDto): Campeonato {
-    const campeonato = this.findOne(id);
-    Object.assign(campeonato, dto);
+  async findOne(id: string) {
+    const campeonato = await this.prisma.campeonato.findUnique({ where: { id } });
+    if (!campeonato) throw new NotFoundException(`Campeonato ${id} no encontrado`);
     return campeonato;
   }
 
-  remove(id: string): void {
-    const index = this.campeonatos.findIndex((c) => c.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Campeonato con id "${id}" no encontrado`);
-    }
-    this.campeonatos.splice(index, 1);
+  async update(id: string, dto: UpdateCampeonatoDto) {
+    await this.findOne(id); // Valida que exista
+    return await this.prisma.campeonato.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.prisma.campeonato.delete({ where: { id } });
   }
 }

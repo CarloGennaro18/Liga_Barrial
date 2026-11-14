@@ -9,7 +9,7 @@ export class TablaPosicionesController {
 
   /** Relación jerárquica: la tabla pertenece a un campeonato */
   @Get()
-  obtener(@Param('campeonatoId') campeonatoId: string) {
-    return this.tablaPosicionesService.calcular(campeonatoId);
+  async obtener(@Param('campeonatoId') campeonatoId: string) {
+    return await this.tablaPosicionesService.calcular(campeonatoId);
   }
 }

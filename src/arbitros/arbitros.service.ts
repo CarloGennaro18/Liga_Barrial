@@ -1,38 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { Arbitro } from './entities/arbitro.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateArbitroDto } from './dto/create-arbitro.dto';
 import { UpdateArbitroDto } from './dto/update-arbitro.dto';
 
 @Injectable()
 export class ArbitrosService {
-  private readonly arbitros: Arbitro[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateArbitroDto): Arbitro {
-    const nuevo: Arbitro = { id: randomUUID(), ...dto };
-    this.arbitros.push(nuevo);
-    return nuevo;
+  async create(dto: CreateArbitroDto) {
+    return await this.prisma.arbitro.create({ data: dto });
   }
 
-  findAll(): Arbitro[] {
-    return this.arbitros;
+  async findAll() {
+    return await this.prisma.arbitro.findMany();
   }
 
-  findOne(id: string): Arbitro {
-    const a = this.arbitros.find((x) => x.id === id);
-    if (!a) throw new NotFoundException(`Árbitro con id "${id}" no encontrado`);
-    return a;
+  async findOne(id: string) {
+    const arbitro = await this.prisma.arbitro.findUnique({ where: { id } });
+    if (!arbitro) throw new NotFoundException(`Árbitro ${id} no encontrado`);
+    return arbitro;
   }
 
-  update(id: string, dto: UpdateArbitroDto): Arbitro {
-    const a = this.findOne(id);
-    Object.assign(a, dto);
-    return a;
+  async update(id: string, dto: UpdateArbitroDto) {
+    await this.findOne(id);
+    return await this.prisma.arbitro.update({ where: { id }, data: dto });
   }
 
-  remove(id: string): void {
-    const index = this.arbitros.findIndex((a) => a.id === id);
-    if (index === -1) throw new NotFoundException(`Árbitro con id "${id}" no encontrado`);
-    this.arbitros.splice(index, 1);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.prisma.arbitro.delete({ where: { id } });
   }
 }

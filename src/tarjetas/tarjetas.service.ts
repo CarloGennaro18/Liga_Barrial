@@ -1,60 +1,48 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { Tarjeta } from './entities/tarjeta.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTarjetaDto } from './dto/create-tarjeta.dto';
 import { UpdateTarjetaDto } from './dto/update-tarjeta.dto';
-import { PartidosService } from '../partidos/partidos.service';
-import { JugadoresService } from '../jugadores/jugadores.service';
 
 @Injectable()
 export class TarjetasService {
-  private readonly tarjetas: Tarjeta[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  constructor(
-    // Inyección de dependencias: usamos otros servicios para validar
-    private readonly partidosService: PartidosService,
-    private readonly jugadoresService: JugadoresService,
-  ) {}
+  async create(dto: CreateTarjetaDto) {
+    // Validar que existan el partido y el jugador
+    const partido = await this.prisma.partido.findUnique({ where: { id: dto.partidoId } });
+    const jugador = await this.prisma.jugador.findUnique({ where: { id: dto.jugadorId } });
+    
+    if (!partido) throw new NotFoundException('Partido no encontrado');
+    if (!jugador) throw new NotFoundException('Jugador no encontrado');
 
-  create(dto: CreateTarjetaDto): Tarjeta {
-    // Valida que existan (lanza 404 si no)
-    this.partidosService.findOne(dto.partidoId);
-    this.jugadoresService.findOne(dto.jugadorId);
-
-    const nueva: Tarjeta = { id: randomUUID(), ...dto };
-    this.tarjetas.push(nueva);
-    return nueva;
+    return await this.prisma.tarjeta.create({ data: dto });
   }
 
-  findAll(): Tarjeta[] {
-    return this.tarjetas;
+  async findAll() {
+    return await this.prisma.tarjeta.findMany();
   }
 
-  findByPartido(partidoId: string): Tarjeta[] {
-    return this.tarjetas.filter((t) => t.partidoId === partidoId);
+  async findByPartido(partidoId: string) {
+    return await this.prisma.tarjeta.findMany({ where: { partidoId } });
   }
 
-  findByJugador(jugadorId: string): Tarjeta[] {
-    return this.tarjetas.filter((t) => t.jugadorId === jugadorId);
+  async findByJugador(jugadorId: string) {
+    return await this.prisma.tarjeta.findMany({ where: { jugadorId } });
   }
 
-  findOne(id: string): Tarjeta {
-    const t = this.tarjetas.find((x) => x.id === id);
-    if (!t) throw new NotFoundException(`Tarjeta con id "${id}" no encontrada`);
-    return t;
+  async findOne(id: string) {
+    const tarjeta = await this.prisma.tarjeta.findUnique({ where: { id } });
+    if (!tarjeta) throw new NotFoundException(`Tarjeta ${id} no encontrada`);
+    return tarjeta;
   }
 
-  update(id: string, dto: UpdateTarjetaDto): Tarjeta {
-    const t = this.findOne(id);
-    if (dto.partidoId) this.partidosService.findOne(dto.partidoId);
-    if (dto.jugadorId) this.jugadoresService.findOne(dto.jugadorId);
-    Object.assign(t, dto);
-    return t;
+  async update(id: string, dto: UpdateTarjetaDto) {
+    await this.findOne(id);
+    return await this.prisma.tarjeta.update({ where: { id }, data: dto });
   }
 
-  remove(id: string): void {
-    const index = this.tarjetas.findIndex((t) => t.id === id);
-    if (index === -1) throw new NotFoundException(`Tarjeta con id "${id}" no encontrada`);
-    this.tarjetas.splice(index, 1);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.prisma.tarjeta.delete({ where: { id } });
   }
 }
