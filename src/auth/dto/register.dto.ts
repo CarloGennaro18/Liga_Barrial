@@ -1,17 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsIn, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
-  @ApiProperty({ example: 'admin@liga.com', description: 'Correo del usuario' })
+  @ApiProperty({ example: 'arbitro@liga.com', description: 'Correo del usuario' })
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ example: '123456', description: 'Contraseña del usuario' })
+  @ApiProperty({ example: '123456', minLength: 6, description: 'Contraseña' })
   @IsString()
   @MinLength(6)
   password!: string;
 
-  @ApiProperty({ example: 'ADMIN', enum: ['ADMIN', 'ARBITRO', 'PUBLICO'], description: 'Rol del usuario' })
-  @IsIn(['ADMIN', 'ARBITRO', 'PUBLICO'])
-  rol!: string;
+  // El primer usuario registrado → ADMIN. Los demás → PUBLICO.
 }

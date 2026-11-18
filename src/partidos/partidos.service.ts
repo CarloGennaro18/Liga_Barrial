@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePartidoDto } from './dto/create-partido.dto';
 import { UpdatePartidoDto } from './dto/update-partido.dto';
@@ -10,19 +14,21 @@ export class PartidosService {
 
   async create(dto: CreatePartidoDto) {
     if (dto.equipoLocalId === dto.equipoVisitanteId) {
-      throw new BadRequestException('El equipo local y visitante no pueden ser el mismo');
+      throw new BadRequestException(
+        'El equipo local y visitante no pueden ser el mismo',
+      );
     }
-    return await this.prisma.partido.create({
+    return this.prisma.partido.create({
       data: { ...dto, estado: 'programado' },
     });
   }
 
   async findAll() {
-    return await this.prisma.partido.findMany();
+    return this.prisma.partido.findMany();
   }
 
   async findByCampeonato(campeonatoId: string) {
-    return await this.prisma.partido.findMany({ where: { campeonatoId } });
+    return this.prisma.partido.findMany({ where: { campeonatoId } });
   }
 
   async findOne(id: string) {
@@ -33,21 +39,29 @@ export class PartidosService {
 
   async update(id: string, dto: UpdatePartidoDto) {
     await this.findOne(id);
-    return await this.prisma.partido.update({ where: { id }, data: dto });
+    return this.prisma.partido.update({ where: { id }, data: dto });
   }
 
-  // Incluye la validación BOLA (usuarioId)
-  async registrarResultado(id: string, dto: RegistrarResultadoDto, usuarioId: string) {
+  /**
+   * Registra el resultado.
+   * BOLA: si el usuario está vinculado a un árbitro (arbitroId no nulo),
+   * solo puede registrar resultados de los partidos que tiene asignados.
+   * Si no tiene arbitroId (ej. ADMIN), puede registrar cualquiera.
+   * Se devuelve 404 en lugar de 403 para no filtrar la existencia de IDs.
+   */
+  async registrarResultado(
+    id: string,
+    dto: RegistrarResultadoDto,
+    user: { id: string; arbitroId?: string | null },
+  ) {
     const partido = await this.findOne(id);
-    
-    // Validación simple de Autorización (BOLA)
-    const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
-    if (usuario?.rol !== 'ADMIN') {
-      // Si no es admin, asumimos que es un arrbitro y verificamos que el partido le pertenezca (simulado)
-      // En un caso real, habría una tabla intermedia de asignaciones.
+
+    if (user.arbitroId && partido.arbitroId !== user.arbitroId) {
+      // No es su partido → 404 para evitar filtración
+      throw new NotFoundException(`Partido ${id} no encontrado`);
     }
 
-    return await this.prisma.partido.update({
+    return this.prisma.partido.update({
       where: { id },
       data: {
         golesLocal: dto.golesLocal,
@@ -59,6 +73,6 @@ export class PartidosService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return await this.prisma.partido.delete({ where: { id } });
+    return this.prisma.partido.delete({ where: { id } });
   }
 }

@@ -3,33 +3,68 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// --- NUEVA ENTIDAD PARA SEGURIDAD ---
+// ====== SEGURIDAD (RBAC) ======
+
+model Rol {
+  id          String   @id @default(uuid())
+  nombre      String   @unique
+  descripcion String?
+  createdAt   DateTime @default(now())
+
+  usuarios Usuario[]
+  permisos RolPermiso[]
+}
+
+model Permiso {
+  id          String   @id @default(uuid())
+  codigo      String   @unique
+  descripcion String?
+
+  roles RolPermiso[]
+}
+
+model RolPermiso {
+  rolId     String
+  permisoId String
+  rol       Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso   Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@index([permisoId])
+}
+
 model Usuario {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  rol       String   @default("ARBITRO") // ADMIN, ARBITRO, PUBLICO
+  rolId     String?
+  rol       Rol?     @relation(fields: [rolId], references: [id], onDelete: Restrict)
+  arbitroId String?  @unique
+  arbitro   Arbitro? @relation(fields: [arbitroId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
+
+  @@index([rolId])
 }
 
-// --- ENTIDADES DE LA LIGA ---
+// ====== LIGA ======
+
 model Campeonato {
-  id        String   @id @default(uuid())
-  nombre    String
-  temporada String
+  id          String   @id @default(uuid())
+  nombre      String
+  temporada   String
   fechaInicio String
   fechaFin    String
-  estado    String   @default("planificado")
-  equipos   Equipo[]
-  partidos  Partido[]
+  estado      String   @default("planificado")
+  equipos     Equipo[]
+  partidos    Partido[]
 }
 
 model Equipo {
-  id            String    @id @default(uuid())
+  id            String      @id @default(uuid())
   nombre        String
   representante String
   telefono      String
@@ -39,25 +74,26 @@ model Equipo {
 }
 
 model Jugador {
-  id            String   @id @default(uuid())
-  nombre        String
+  id             String   @id @default(uuid())
+  nombre         String
   numeroCamiseta Int
-  posicion      String
-  equipoId      String
-  equipo        Equipo   @relation(fields: [equipoId], references: [id])
-  tarjetas      Tarjeta[]
+  posicion       String
+  equipoId       String
+  equipo         Equipo   @relation(fields: [equipoId], references: [id])
+  tarjetas       Tarjeta[]
 }
 
 model Arbitro {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   nombre    String
   telefono  String
   categoria String
   partidos  Partido[]
+  usuario   Usuario?
 }
 
 model Cancha {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   nombre    String
   direccion String
   capacidad Int
@@ -65,22 +101,22 @@ model Cancha {
 }
 
 model Partido {
-  id               String     @id @default(uuid())
-  campeonatoId     String
-  campeonato       Campeonato @relation(fields: [campeonatoId], references: [id])
-  jornada          Int
-  equipoLocalId    String
+  id                String     @id @default(uuid())
+  campeonatoId      String
+  campeonato        Campeonato @relation(fields: [campeonatoId], references: [id])
+  jornada           Int
+  equipoLocalId     String
   equipoVisitanteId String
-  arbitroId        String
-  arbitro          Arbitro    @relation(fields: [arbitroId], references: [id])
-  canchaId         String
-  cancha           Cancha     @relation(fields: [canchaId], references: [id])
-  fecha            String
-  hora             String
-  estado           String     @default("programado")
-  golesLocal       Int?
-  golesVisitante   Int?
-  tarjetas         Tarjeta[]
+  arbitroId         String
+  arbitro           Arbitro    @relation(fields: [arbitroId], references: [id])
+  canchaId          String
+  cancha            Cancha     @relation(fields: [canchaId], references: [id])
+  fecha             String
+  hora              String
+  estado            String     @default("programado")
+  golesLocal        Int?
+  golesVisitante    Int?
+  tarjetas          Tarjeta[]
 }
 
 model Tarjeta {
