@@ -1,39 +1,43 @@
 # ⚽ Liga Barrial API
 
-API REST para gestionar una liga barrial de fútbol: equipos, jugadores, partidos,
-resultados, tarjetas y tabla de posiciones calculada automáticamente.
+API REST desarrollada para gestionar un campeonato de fútbol de barrio. Permite administrar equipos, jugadores, árbitros, canchas, programar partidos, registrar resultados y tarjetas, y calcula automáticamente la tabla de posiciones.
 
-## 🧱 Stack
+El sistema incluye seguridad basada en roles y permisos (RBAC), autenticación con JSON Web Tokens (JWT) y documentación interactiva con Swagger.
 
-- **NestJS 12** – modular, DI, guards, pipes
-- **Prisma 6** + **PostgreSQL 16** (Docker)
-- **JWT** (`@nestjs/jwt` + Passport) para autenticación
-- **Argon2id** para hash de contraseñas (OWASP)
-- **Swagger** (`@nestjs/swagger`) en `/api/v1/docs`
-- **Throttler** (`@nestjs/throttler`) – 10 req/min por IP
-- **class-validator** + `ValidationPipe` global (`whitelist: true`)
+## 🧱 Stack Tecnológico
 
-## 📦 Requisitos
+- **NestJS 12** – Framework de Node.js para arquitecturas modulares (Módulos, Controladores, Servicios).
+- **TypeScript** – Tipado estático para mayor robustez del código.
+- **Prisma 6 (ORM)** + **PostgreSQL 16** – Base de datos relacional y mapeo de datos.
+- **JWT** (`@nestjs/jwt` + Passport) – Autenticación sin estado.
+- **Argon2id** – Hash de contraseñas recomendado por OWASP.
+- **Swagger** (`@nestjs/swagger`) – Documentación de la API.
+- **Throttler** (`@nestjs/throttler`) – Rate limiting (límite de peticiones por IP).
+- **class-validator** + `ValidationPipe` – Validación estricta de datos entrantes (whitelist).
+
+## 📦 Requisitos Previos
 
 - Node.js ≥ 20
-- Docker + Docker Compose
+- Docker y Docker Compose instalados
 
-## 🚀 Arranque
+## 🚀 Instalación y Arranque
 
 ```bash
-# 1. Dependencias
+# 1. Clonar el repositorio e instalar dependencias
 npm install
 
-# 2. Base de datos
+# 2. Levantar la base de datos (PostgreSQL) y el gestor visual (Adminer)
 docker compose up -d postgres adminer
 
-# 3. Variables de entorno
+# 3. Configurar variables de entorno
 cp .env.example .env
-# edita JWT_SECRET
+# IMPORTANTE: Abre el archivo .env y edita el JWT_SECRET por un valor seguro.
 
-# 4. Migración + seed (roles, permisos, admin)
+# 4. Preparar la base de datos (crear tablas)
 npx prisma migrate dev --name init
+
+# 5. Sembrar la base de datos (crear roles, permisos y usuario admin)
 npx prisma db seed
 
-# 5. API
+# 6. Arrancar el servidor en modo desarrollo
 npm run start:dev
