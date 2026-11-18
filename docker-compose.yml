@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: liga_password
       POSTGRES_DB: liga_barrial
     ports:
-      - "5432:5432"
+      - "5433:5432"          # ← 5433 en PC - 5432 del contenedor
     volumes:
       - liga_pgdata:/var/lib/postgresql/data
     healthcheck:
